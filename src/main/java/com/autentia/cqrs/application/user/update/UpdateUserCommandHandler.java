@@ -1,36 +1,33 @@
-package com.autentia.cqrs.application.user.create;
+package com.autentia.cqrs.application.user.update;
 
 import com.autentia.cqrs.adapter.primary.vo.AddressVO;
 import com.autentia.cqrs.adapter.primary.vo.UserVO;
 import com.autentia.cqrs.domain.Address;
 import com.autentia.cqrs.domain.User;
-import com.autentia.cqrs.domain.create.UserCreator;
+import com.autentia.cqrs.domain.update.UserUpdater;
 import com.autentia.cqrs.shared.command.CommandHandler;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Component
-public class CreateUserCommandHandler implements CommandHandler<CreateUserCommand> {
+public class UpdateUserCommandHandler implements CommandHandler<UpdateUserCommand> {
 
-    private final UserCreator userCreator;
+    private final UserUpdater userUpdater;
 
-    @Autowired
-    public CreateUserCommandHandler(UserCreator userCreator) {
-        this.userCreator = userCreator;
+    public UpdateUserCommandHandler(UserUpdater userUpdater) {
+        this.userUpdater = userUpdater;
     }
 
     @Override
-    public void handle(CreateUserCommand command) {
-        User user = toUser(command.getUser());
-        userCreator.createUser(user);
+    public void handle(UpdateUserCommand command) {
+        userUpdater.updateUser(toUser(command.getUser()));
     }
 
     @Override
     public Class<?> getSupportedCommandClass() {
-        return CreateUserCommand.class;
+        return UpdateUserCommand.class;
     }
 
     private User toUser(UserVO user) {

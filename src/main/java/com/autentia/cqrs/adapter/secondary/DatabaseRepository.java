@@ -5,6 +5,7 @@ import com.autentia.cqrs.adapter.secondary.vo.UserJPA;
 import com.autentia.cqrs.domain.Address;
 import com.autentia.cqrs.domain.User;
 import com.autentia.cqrs.domain.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,14 +26,40 @@ public class DatabaseRepository implements UserRepository {
 
     @Override
     public void createUser(User user) {
-        UserJPA userJPA = userJPARepository.save(toUserJPA(user));
-        Set<AddressJPA> addressesJPA = toAddressJPA(user.getAddresses(), userJPA.getId());
+        final UserJPA userJPA = userJPARepository.save(toUserJPA(user));
+        final Set<AddressJPA> addressesJPA = toAddressJPA(user.getAddresses(), userJPA.getId());
         addressesJPA.forEach(address -> addressJPARepository.save(address));
     }
 
+    @Override
     public User findUserByNif(String nif) {
-        UserJPA userJPA = userJPARepository.findByNif(nif);
+        final UserJPA userJPA = userJPARepository.findByNif(nif);
+        if (userJPA == null) {
+            throw new EntityNotFoundException("User not found");
+        }
         return toUser(userJPA);
+    }
+
+    @Override
+    public void updateUser(User user) {
+
+        final UserJPA userJPAByNif = userJPARepository.findByNif(user.getNif());
+        if (userJPAByNif == null) {
+            throw new EntityNotFoundException("User not found");
+        }
+
+        final UserJPA userJPA = toUserJPA(user);
+        userJPA.setId(userJPAByNif.getId());
+        userJPARepository.save(userJPA);
+
+        final Set<AddressJPA> addressesJPA = toAddressJPA(user.getAddresses(), userJPA.getId());
+        addressesJPA.forEach(address -> addressJPARepository.save(address));
+    }
+
+    @Override
+    public void deleteUserByNif(String nif) {
+        final UserJPA userJPA = userJPARepository.findByNif(nif);
+        userJPARepository.delete(userJPA);
     }
 
     private UserJPA toUserJPA(User user) {

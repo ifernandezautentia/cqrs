@@ -1,10 +1,10 @@
-package com.autentia.cqrs.application.user.create;
+package com.autentia.cqrs.application.user.update;
 
 import com.autentia.cqrs.adapter.primary.vo.UserVO;
 import com.autentia.cqrs.shared.command.Command;
 import lombok.Data;
 
 @Data
-public class CreateUserCommand extends Command {
+public class UpdateUserCommand extends Command {
     private final UserVO user;
 }
