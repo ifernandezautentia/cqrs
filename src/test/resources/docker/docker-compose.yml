@@ -1,0 +1,13 @@
+version: '3.7'
+services:
+  mydb:
+    shm_size: '1g'
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    volumes:
+      - "../initdb/postgres:/docker-entrypoint-initdb.d"
+    environment:
+      - ORACLE_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST_AUTH_METHOD=trust
